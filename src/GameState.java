@@ -8,15 +8,15 @@ import java.io.IOException;
 public class GameState {
     private String secretWord;
     private char[] mask;
-    private int tries = 0;
-    private List<Character> wrongLetters = new ArrayList<>();
+    private int tries;
+    private List<Character> usedLetters = new ArrayList<>();
 
-    public String setupGame() {
+    public void setupGame() {
         String fileName = "words.txt";
         try {
             List<String> lines = Files.readAllLines(Paths.get(fileName));
             if (lines.isEmpty())
-                return "Error - Empty File";
+                throw new RuntimeException("Empty file");
 
             Random generator = new Random();
             this.secretWord = lines.get(generator.nextInt(lines.size())).trim().toUpperCase();
@@ -26,55 +26,61 @@ public class GameState {
                 mask[i] = '_';
             }
 
-            this.tries = 0;
-            this.wrongLetters.clear();
+            this.tries = 6;
+            this.usedLetters.clear();
 
-            return getMaskDisplay();
         } catch (IOException e) {
-            return e.getMessage();
+            throw new RuntimeException("Error reading file. " +e.getMessage());
         }
     }
 
     public boolean guessLetter(char letter) {
-        letter = Character.toUpperCase(letter);
-        boolean guess = false;
-
-        if(wrongLetters.contains(letter)) {
-            System.out.println("You already tried that letter!");
+        if(gameOver())
             return false;
-        }
+
+        letter = Character.toUpperCase(letter);
+        boolean guessC = false;
+
+        if(usedLetters.contains(letter))
+            return false;
+
+        usedLetters.add(letter);
 
         for (int i = 0; i < secretWord.length(); i++) {
             if (secretWord.charAt(i) == letter) {
                 mask[i] = letter;
-                guess = true;
+                guessC = true;
             }
         }
+        if (!guessC)
+            tries--;
 
-        if (!guess) {
-            tries++;
-            wrongLetters.add(letter);
-            System.out.println("Worng!! Tries left: " + tries + "/6");
-        }
-
-        if (tries >= 6) {
-            System.out.println("YOUUUUUU LOSSSSSSSE - Correct word was: " + secretWord);
-        }else{
-            System.out.println("YOU WIN!!");
-        }
-        return guess;
+        return guessC;
     }
 
-    public String getWrongLettersDisplay() {
+    public boolean guessWord(String word) {
+        if(gameOver())
+            return false;
+
+        word = word.toUpperCase();
+
+        if(word.equals(secretWord)){
+            for(int i = 0; i < secretWord.length(); i++){
+                mask[i] = secretWord.charAt(i);
+            }
+            return true;
+        }else {
+            tries--;
+            return false;
+        }
+    }
+
+    public String getWrongLetter() {
         StringBuilder sb = new StringBuilder();
-        for (char c : wrongLetters) {
+        for (char c : usedLetters) {
             sb.append(c).append(" ");
         }
         return sb.toString().trim();
-    }
-
-    public int getTries() {
-        return tries;
     }
 
     public String getMaskDisplay() {
@@ -88,6 +94,23 @@ public class GameState {
     public String getSecretWord() {
         return secretWord;
     }
+
+    public int getTriesLeft() {
+        return tries;
+    }
+
+    public boolean won(){
+        return secretWord.equals(new String(mask));
+    }
+
+    public boolean lost(){
+        return tries <= 0;
+    }
+
+    public boolean gameOver(){
+        return won() || lost();
+    }
+
 }
 
 
