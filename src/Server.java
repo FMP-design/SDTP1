@@ -5,23 +5,27 @@ import java.net.Socket;
 public class Server {
     private ServerSocket ss;
 
-    public Server(){
+    public Server() {
         try {
-            ss = new ServerSocket (5432);
+            ss = new ServerSocket(5432);
             System.out.println("Server Started at port 5432");
 
-            while (true){
-                Socket socket = ss.accept();
-                System.out.println("Client ON!");
+            GameState game = new GameState();
+            game.setupGame();
 
-                ClientHandler client = new ClientHandler(socket);
-                client.start();
+            while (true) {
+                Socket socket = ss.accept();
+                System.out.println("PLAYER ON!");
+
+                ClientHandler jogador = new ClientHandler(socket, game);
+
             }
-        }catch ( IOException e){
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
-    public static void main (String args[]){
+
+    public static void main(String args[]) {
         Server server = new Server();
     }
 }
