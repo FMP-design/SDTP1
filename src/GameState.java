@@ -9,6 +9,8 @@ public class GameState {
     private String secretWord;
     private char[] mask;
     private int tries;
+    private int currentR = 0;
+    private List<Integer> playerPerR = new ArrayList<>();
     private List<Character> usedLetters = new ArrayList<>();
 
     public void setupGame() {
@@ -30,20 +32,19 @@ public class GameState {
             this.usedLetters.clear();
 
         } catch (IOException e) {
-            throw new RuntimeException("Error reading file. " +e.getMessage());
+            throw new RuntimeException("Error reading file. " + e.getMessage());
         }
     }
 
-    public boolean guessLetter(char letter) {
-        if(gameOver())
+    public synchronized boolean guessLetter(char letter) {
+        if (gameOver())
             return false;
 
         letter = Character.toUpperCase(letter);
         boolean guessC = false;
 
-        if(usedLetters.contains(letter))
+        if (usedLetters.contains(letter))
             return false;
-
         usedLetters.add(letter);
 
         for (int i = 0; i < secretWord.length(); i++) {
@@ -58,24 +59,24 @@ public class GameState {
         return guessC;
     }
 
-    public boolean guessWord(String word) {
-        if(gameOver())
+    public synchronized boolean guessWord(String word) {
+        if (gameOver())
             return false;
 
         word = word.toUpperCase();
 
-        if(word.equals(secretWord)){
-            for(int i = 0; i < secretWord.length(); i++){
+        if (word.equals(secretWord)) {
+            for (int i = 0; i < secretWord.length(); i++) {
                 mask[i] = secretWord.charAt(i);
             }
             return true;
-        }else {
+        } else {
             tries--;
             return false;
         }
     }
 
-    public String getWrongLetter() {
+    public synchronized String getWrongLetter() {
         StringBuilder sb = new StringBuilder();
         for (char c : usedLetters) {
             sb.append(c).append(" ");
@@ -83,7 +84,7 @@ public class GameState {
         return sb.toString().trim();
     }
 
-    public String getMaskDisplay() {
+    public synchronized String getMaskDisplay() {
         StringBuilder display = new StringBuilder();
         for (int i = 0; i < mask.length; i++) {
             display.append(mask[i]).append(" ");
@@ -95,22 +96,24 @@ public class GameState {
         return secretWord;
     }
 
-    public int getTriesLeft() {
+    public synchronized int getTriesLeft() {
         return tries;
     }
 
-    public boolean won(){
+    public synchronized boolean won() {
         return secretWord.equals(new String(mask));
     }
 
-    public boolean lost(){
+    public synchronized boolean lost() {
         return tries <= 0;
     }
 
-    public boolean gameOver(){
+    public synchronized boolean gameOver() {
         return won() || lost();
     }
-
+    public synchronized void penalize(){
+        tries--;
+    }
 }
 
 

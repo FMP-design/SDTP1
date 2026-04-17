@@ -1,27 +1,105 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Server {
     private ServerSocket ss;
+    private int currentPlayer = 0;
+    private List<ClientHandler> players = new ArrayList<>();
 
     public Server() {
         try {
             ss = new ServerSocket(5432);
-            System.out.println("Server Started at port 5432");
+            ss.setSoTimeout(15000);
+            System.out.println("Waiting for players (15s)...");
 
             GameState game = new GameState();
             game.setupGame();
 
-            while (true) {
-                Socket socket = ss.accept();
-                System.out.println("PLAYER ON!");
+            while (players.size() < 4) {
+                try {
+                    Socket socket = ss.accept();
+                    System.out.println("PLAYER ON!");
 
-                ClientHandler jogador = new ClientHandler(socket, game);
+                    ClientHandler player = new ClientHandler(socket, this);
+                    players.add(player);
 
+                    if (players.size() >= 2 && ss.getSoTimeout() != 10000) {
+                        ss.setSoTimeout(10000);
+                        System.out.println("Min players reached! Waiting for more...");
+                    }
+                } catch (SocketTimeoutException e) {
+                    if (players.size() < 2) {
+                        System.out.println("Game cancelled!!");
+                        return;
+                    }
+                    System.out.println("Timeout!");
+                    break;
+                }
+            }
+            broadcast("Game Started!");
+            broadcast("WORD: " + game.getMaskDisplay());
+
+            while (!game.gameOver()) {
+                ClientHandler player = players.get(currentPlayer);
+                player.setMyTurn(true);
+                player.sendMessage("Your Turn");
+                broadcast("Player: " + currentPlayer + "'s Turn");
+                String guess = null;
+                long startTime = System.currentTimeMillis();
+
+                while (!player.hasPlayed()) {
+                    if (System.currentTimeMillis() - startTime > 10000) {
+                        player.sendMessage("Time OUT!");
+                        game.penalize();
+                        break;
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                    }
+                }
+
+                guess = player.getLastGuess();
+                player.resetTurn();
+
+                if (guess != null) {
+                    boolean rlt;
+
+                    if (guess.length() == 1) {
+                        rlt = game.guessLetter(guess.charAt(0));
+                    } else {
+                        rlt = game.guessWord(guess);
+                    }
+
+                    if (rlt) {
+                        player.sendMessage("Correct Guess!");
+                    } else {
+                        player.sendMessage("Wrong Guess!");
+                    }
+                }
+
+                broadcast("WORD: " + game.getMaskDisplay());
+                broadcast("Tries Left: " + game.getTriesLeft());
+                broadcast("Used Letters: " + game.getWrongLetter());
+                currentPlayer = (currentPlayer + 1) % players.size();
+            }
+            if (game.won()) {
+                broadcast("WIN");
+            } else {
+                broadcast("LOSE |WORD WAS - " + game.getSecretWord() + ".");
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    public void broadcast(String message) {
+        for (ClientHandler player : players) {
+            player.sendMessage(message);
         }
     }
 
