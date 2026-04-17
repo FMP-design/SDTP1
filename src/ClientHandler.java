@@ -33,6 +33,14 @@ public class ClientHandler extends Thread {
         return lastGuess;
     }
 
+    public void closeConnection(){
+        try{
+            skt.close();
+        } catch (IOException e){
+            System.out.println("Error closing client socket");
+        }
+    }
+
     public synchronized void resetTurn() {
         myTrun = false;
         played = false;
@@ -54,7 +62,9 @@ public class ClientHandler extends Thread {
                         out.println("Wait Your Turn!");
                         continue;
                     }
-                    lastGuess = message.trim();
+                    message = message.trim();
+                    if(message.isEmpty()) continue;
+                    lastGuess = message;
                     played = true;
                 }
             }
@@ -63,6 +73,14 @@ public class ClientHandler extends Thread {
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
+        } finally{
+            try{
+                if(!skt.isClosed()) {
+                    skt.close();
+                }
+            } catch(IOException e){
+
+            }
         }
     }
 }

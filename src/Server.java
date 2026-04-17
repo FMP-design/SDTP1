@@ -52,7 +52,7 @@ public class Server {
                 long startTime = System.currentTimeMillis();
 
                 while (!player.hasPlayed()) {
-                    if (System.currentTimeMillis() - startTime > 10000) {
+                    if (System.currentTimeMillis() - startTime > 30000) {
                         player.sendMessage("Time OUT!");
                         game.penalize();
                         break;
@@ -92,6 +92,7 @@ public class Server {
             } else {
                 broadcast("LOSE |WORD WAS - " + game.getSecretWord() + ".");
             }
+            shutdown();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -102,6 +103,27 @@ public class Server {
             player.sendMessage(message);
         }
     }
+
+    public void shutdown() {
+        try {
+            for (ClientHandler player : players) {
+                player.sendMessage("Game Over. Disconnecting...");
+
+            }
+
+            Thread.sleep(200);
+
+            for (ClientHandler player : players) {
+                player.closeConnection();
+            }
+            ss.close();
+            System.out.println("Server closed.");
+
+        } catch (IOException | InterruptedException e) {
+            System.out.println("Error shutting down server.");
+        }
+    }
+
 
     public static void main(String args[]) {
         Server server = new Server();

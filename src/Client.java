@@ -23,6 +23,8 @@ public class Client {
                     }
                 }catch (IOException e) {
                     System.out.println("Disconnected from server.");
+                } finally {
+                    System.exit(0);
                 }
             }).start();
 

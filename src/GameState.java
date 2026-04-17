@@ -14,9 +14,9 @@ public class GameState {
     private List<Character> usedLetters = new ArrayList<>();
 
     public void setupGame() {
-        String fileName = "words.txt";
+       // String fileName = "words.txt";
         try {
-            List<String> lines = Files.readAllLines(Paths.get(fileName));
+            List<String> lines = Files.readAllLines(Paths.get("SDTP1/words.txt"));
             if (lines.isEmpty())
                 throw new RuntimeException("Empty file");
 
