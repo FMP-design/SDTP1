@@ -59,7 +59,6 @@ public class ClientHandler extends Thread {
             while ((message = in.readLine()) != null) {
                 synchronized (this) {
                     if(!myTrun) {
-                        out.println("Wait Your Turn!");
                         continue;
                     }
                     message = message.trim();
@@ -68,9 +67,6 @@ public class ClientHandler extends Thread {
                     played = true;
                 }
             }
-
-            skt.close();
-
         } catch (IOException e) {
             System.out.println(e.getMessage());
         } finally{

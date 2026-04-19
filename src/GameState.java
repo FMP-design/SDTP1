@@ -9,14 +9,11 @@ public class GameState {
     private String secretWord;
     private char[] mask;
     private int tries;
-    private int currentR = 0;
-    private List<Integer> playerPerR = new ArrayList<>();
     private List<Character> usedLetters = new ArrayList<>();
 
     public void setupGame() {
-       // String fileName = "words.txt";
         try {
-            List<String> lines = Files.readAllLines(Paths.get("SDTP1/words.txt"));
+            List<String> lines = Files.readAllLines(Paths.get("../words.txt"));
             if (lines.isEmpty())
                 throw new RuntimeException("Empty file");
 
@@ -76,12 +73,16 @@ public class GameState {
         }
     }
 
-    public synchronized String getWrongLetter() {
-        StringBuilder sb = new StringBuilder();
-        for (char c : usedLetters) {
-            sb.append(c).append(" ");
+    public synchronized boolean guess(String wORl){
+        if(wORl.length() == 1){
+            return guessLetter(wORl.charAt(0));
+        }else{
+            return guessWord(wORl);
         }
-        return sb.toString().trim();
+    }
+
+    public synchronized String getWrongLetter() {
+        return usedLetters.toString();
     }
 
     public synchronized String getMaskDisplay() {
@@ -111,7 +112,8 @@ public class GameState {
     public synchronized boolean gameOver() {
         return won() || lost();
     }
-    public synchronized void penalize(){
+
+    public synchronized void wrongMove(){
         tries--;
     }
 }

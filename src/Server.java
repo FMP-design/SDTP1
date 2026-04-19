@@ -54,7 +54,7 @@ public class Server {
                 while (!player.hasPlayed()) {
                     if (System.currentTimeMillis() - startTime > 30000) {
                         player.sendMessage("Time OUT!");
-                        game.penalize();
+                        game.wrongMove();
                         break;
                     }
                     try {
@@ -66,14 +66,10 @@ public class Server {
                 guess = player.getLastGuess();
                 player.resetTurn();
 
-                if (guess != null) {
-                    boolean rlt;
-
-                    if (guess.length() == 1) {
-                        rlt = game.guessLetter(guess.charAt(0));
-                    } else {
-                        rlt = game.guessWord(guess);
-                    }
+                if (guess == null || guess.isEmpty()) {
+                    game.wrongMove();
+                } else {
+                    boolean rlt = game.guess(guess);
 
                     if (rlt) {
                         player.sendMessage("Correct Guess!");
@@ -82,9 +78,7 @@ public class Server {
                     }
                 }
 
-                broadcast("WORD: " + game.getMaskDisplay());
-                broadcast("Tries Left: " + game.getTriesLeft());
-                broadcast("Used Letters: " + game.getWrongLetter());
+                gameState(game);
                 currentPlayer = (currentPlayer + 1) % players.size();
             }
             if (game.won()) {
@@ -124,6 +118,11 @@ public class Server {
         }
     }
 
+    public void gameState(GameState game) {
+        broadcast("WORD: " + game.getMaskDisplay());
+        broadcast("Tries Left: " + game.getTriesLeft());
+        broadcast("Used Letters: " + game.getWrongLetter());
+    }
 
     public static void main(String args[]) {
         Server server = new Server();

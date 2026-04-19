@@ -28,9 +28,11 @@ public class Client {
                 }
             }).start();
 
-            while (true) {
-                String message = sc.nextLine();
-                out.println(message);
+            while (sc.hasNextLine()) {
+                String message = sc.nextLine().trim();
+                if(!message.isEmpty()) {
+                    out.println(message);
+                }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
