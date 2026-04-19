@@ -12,48 +12,59 @@ public class Server {
 
     public Server() {
         try {
+            //Inicializa servidor TCP
             ss = new ServerSocket(5432);
-            ss.setSoTimeout(15000);
-            System.out.println("Waiting for players (15s)...");
+            //Tempo máximo de espera por jogadores no "LOBBY"
+            ss.setSoTimeout(20000);
+            System.out.println("Waiting for players (20s)...");
 
+            //Cria/ Inicializa o jogo
             GameState game = new GameState();
             game.setupGame();
 
+            //REQUIRIMENTO - Máximo 4 jogadores
             while (players.size() < 4) {
                 try {
                     Socket socket = ss.accept();
                     System.out.println("PLAYER ON!");
+                    broadcast("Waiting for more players (20s)...");
 
-                    ClientHandler player = new ClientHandler(socket, this);
+                    ClientHandler player = new ClientHandler(socket, this, players.size() + 1);
                     players.add(player);
+                    player.sendMessage("----------WELCOME " +player.getId()+ " " +players.size());
 
-                    if (players.size() >= 2 && ss.getSoTimeout() != 10000) {
-                        ss.setSoTimeout(10000);
-                        System.out.println("Min players reached! Waiting for more...");
+                    //Ajuste no timeout para quando tivermos 2 jogadores esperar por mais
+                    if (players.size() >= 2 && ss.getSoTimeout() != 15000) {
+                        ss.setSoTimeout(15000);
+                        broadcast("Min players reached! Waiting for more... (15s)");
                     }
                 } catch (SocketTimeoutException e) {
                     if (players.size() < 2) {
-                        System.out.println("Game cancelled!!");
+                        System.out.println("Game cancelled!! Not enough players!");
                         return;
                     }
                     System.out.println("Timeout!");
                     break;
                 }
             }
-            broadcast("Game Started!");
-            broadcast("WORD: " + game.getMaskDisplay());
+            broadcast("----------GAME-STARTED!----------");
+            broadcast("----------SECRET-WORD: " +game.getMaskDisplay());
 
+            //Ciclo principal do jogo (Termina quando houver vitória ou derrota)
             while (!game.gameOver()) {
                 ClientHandler player = players.get(currentPlayer);
+                //Define jogador atual como ativo
                 player.setMyTurn(true);
-                player.sendMessage("Your Turn");
-                broadcast("Player: " + currentPlayer + "'s Turn");
+                broadcast("----------Player "+ player.getId() +" is now playing!");
+                player.sendMessage("----------YOUR-TURN----------");
                 String guess = null;
                 long startTime = System.currentTimeMillis();
 
+                //Espera jogada ou dá timeout da ronda
                 while (!player.hasPlayed()) {
                     if (System.currentTimeMillis() - startTime > 30000) {
                         player.sendMessage("Time OUT!");
+                        //Penalização em caso de não responder dentro do tempo
                         game.wrongMove();
                         break;
                     }
@@ -72,20 +83,24 @@ public class Server {
                     boolean rlt = game.guess(guess);
 
                     if (rlt) {
-                        player.sendMessage("Correct Guess!");
+                        player.sendMessage("----------CORRECT-GUESS----------");
                     } else {
-                        player.sendMessage("Wrong Guess!");
+                        player.sendMessage("----------WRONG-GUESS----------");
                     }
                 }
 
+                //Imprimi e atualiza o estado o jogo para todos os jogadores
                 gameState(game);
+                //Avança para o proximo jogador
                 currentPlayer = (currentPlayer + 1) % players.size();
             }
+            //Resultado final do jogo
             if (game.won()) {
-                broadcast("WIN");
+                broadcast("----------WIN----------");
             } else {
-                broadcast("LOSE |WORD WAS - " + game.getSecretWord() + ".");
+                broadcast("----------LOSE-WORD WAS: " + game.getSecretWord());
             }
+            //Encerra todas as ligações (Servidor - Cliente)
             shutdown();
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -102,11 +117,8 @@ public class Server {
         try {
             for (ClientHandler player : players) {
                 player.sendMessage("Game Over. Disconnecting...");
-
             }
-
             Thread.sleep(200);
-
             for (ClientHandler player : players) {
                 player.closeConnection();
             }
@@ -119,9 +131,11 @@ public class Server {
     }
 
     public void gameState(GameState game) {
+        broadcast("------------------------------");
         broadcast("WORD: " + game.getMaskDisplay());
-        broadcast("Tries Left: " + game.getTriesLeft());
-        broadcast("Used Letters: " + game.getWrongLetter());
+        broadcast(game.getHangman());
+        broadcast("USEF LETTERS: " + game.getWrongLetter());
+        broadcast("------------------------------");
     }
 
     public static void main(String args[]) {

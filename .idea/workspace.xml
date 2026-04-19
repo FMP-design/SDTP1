@@ -6,6 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="644a85bb-97d2-4684-bb68-c2c1115d4387" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SDTP1/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SDTP1/Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SDTP1/ClientHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SDTP1/ClientHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SDTP1/GameState.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SDTP1/GameState.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SDTP1/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SDTP1/Server.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ClientHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameState.java" afterDir="false" />
@@ -73,7 +77,7 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration name="Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+    <configuration name="Client" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Client" />
       <module name="SDTP1" />
       <method v="2">

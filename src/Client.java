@@ -8,6 +8,7 @@ import java.util.Scanner;
 public class Client {
     public static void main(String[] args) {
         try {
+            //Estabelece ligação TCP - SERVIDOR NA PORTA 5432
             Socket s = new Socket("localhost", 5432);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -15,6 +16,7 @@ public class Client {
             PrintWriter out = new PrintWriter(s.getOutputStream(), true);
             Scanner sc = new Scanner(System.in);
 
+            //Thread responsável por receber mensagens do servidor
             new Thread(() -> {
                 try {
                     String answer;
@@ -28,10 +30,11 @@ public class Client {
                 }
             }).start();
 
+            //Envia jogadas para servidor
             while (sc.hasNextLine()) {
                 String message = sc.nextLine().trim();
                 if(!message.isEmpty()) {
-                    out.println(message);
+                    out.println("GUESS " +message);
                 }
             }
         } catch (Exception e) {
