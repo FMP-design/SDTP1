@@ -70,6 +70,7 @@ public class ClientHandler extends Thread {
                 synchronized (this) {
                     //Se não for o meu tunro -> IGNORAR
                     if (!myTrun) {
+                        out.println("NOT YOUR TURN!!");
                         continue;
                     }
                     //Guarda jogada recebida para o servidor

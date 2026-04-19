@@ -31,7 +31,7 @@ public class Server {
 
                     ClientHandler player = new ClientHandler(socket, this, players.size() + 1);
                     players.add(player);
-                    player.sendMessage("----------WELCOME " +player.getPlayerId()+ " " +players.size());
+                    player.sendMessage("----------WELCOME " + player.getPlayerId() + " " + players.size());
 
                     //Ajuste no timeout para quando tivermos 2 jogadores esperar por mais
                     if (players.size() >= 2 && ss.getSoTimeout() != 15000) {
@@ -48,14 +48,14 @@ public class Server {
                 }
             }
             broadcast("----------GAME-STARTED!----------");
-            broadcast("----------SECRET-WORD: " +game.getMaskDisplay());
+            broadcast("----------SECRET-WORD: [" + game.getMaskDisplay() + "]");
 
             //Ciclo principal do jogo (Termina quando houver vitória ou derrota)
             while (!game.gameOver()) {
                 ClientHandler player = players.get(currentPlayer);
                 //Define jogador atual como ativo
                 player.setMyTurn(true);
-                broadcast("----------Player "+ player.getId() +" is now playing!");
+                broadcast("----------Player " + player.getPlayerId() + " is now playing!");
                 player.sendMessage("----------YOUR-TURN----------");
                 String guess = null;
                 long startTime = System.currentTimeMillis();
@@ -132,9 +132,9 @@ public class Server {
 
     public void gameState(GameState game) {
         broadcast("------------------------------");
-        broadcast("WORD: " + game.getMaskDisplay());
+        broadcast("WORD: [" + game.getMaskDisplay() + "]");
         broadcast(game.getHangman());
-        broadcast("USEF LETTERS: " + game.getWrongLetter());
+        broadcast("USED LETTERS: " + game.getWrongLetter());
         broadcast("------------------------------");
     }
 
