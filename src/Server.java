@@ -31,7 +31,7 @@ public class Server {
 
                     ClientHandler player = new ClientHandler(socket, this, players.size() + 1);
                     players.add(player);
-                    player.sendMessage("----------WELCOME " +player.getId()+ " " +players.size());
+                    player.sendMessage("----------WELCOME " +player.getPlayerId()+ " " +players.size());
 
                     //Ajuste no timeout para quando tivermos 2 jogadores esperar por mais
                     if (players.size() >= 2 && ss.getSoTimeout() != 15000) {

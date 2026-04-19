@@ -56,7 +56,7 @@ public class ClientHandler extends Thread {
         out.println(message);
     }
 
-    public int getId() {
+    public int getPlayerId() {
         return id;
     }
 
