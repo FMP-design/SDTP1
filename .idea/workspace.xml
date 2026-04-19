@@ -6,8 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="644a85bb-97d2-4684-bb68-c2c1115d4387" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ClientHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SDTP1/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SDTP1/Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SDTP1/ClientHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SDTP1/ClientHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SDTP1/GameState.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SDTP1/GameState.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SDTP1/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SDTP1/Server.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
